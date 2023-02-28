@@ -1,115 +1,350 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Phone Verification',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: VerifyPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class VerifyPage extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _VerifyPageState createState() => _VerifyPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _VerifyPageState extends State<VerifyPage> {
+  final _phoneNumberController = TextEditingController();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  @override
+  void dispose() {
+    _phoneNumberController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+        //appBar: AppBar(
+        //  title: Text('Verify'),
+        //),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: 10),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/logo.png'), // Specify the image file location here
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                  SizedBox(height: 32),
+                  Text(
+                    'Enter your phone number:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _phoneNumberController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter phone number',
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => type_of_user(),
+                        ),
+                      );
+                    },
+                    child: Text('Verify'),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class type_of_user extends StatefulWidget {
+  @override
+  type_of_userState createState() => type_of_userState();
+}
+
+class type_of_userState extends State<type_of_user> {
+  int ans = 0;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to previous screen
+              },
+            )),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: 5),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/logo.png'), // Specify the image file location here
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Who are you?',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 16),
+                  RadioListTile(
+                    title: Text(
+                      'Patient',
+                      style: TextStyle(fontSize: 15, color: Colors.white),
+                    ),
+                    value: 1,
+                    groupValue: ans,
+                    onChanged: (value) {
+                      ans = 1;
+                    },
+                  ),
+                  RadioListTile(
+                    title: Text(
+                      'Doctor',
+                      style: TextStyle(fontSize: 15, color: Colors.white),
+                    ),
+                    value: 2,
+                    groupValue: ans,
+                    onChanged: (value) {
+                      ans = 2;
+                    },
+                    selectedTileColor: Colors.blue,
+                  ),
+                  RadioListTile(
+                    title: Text(
+                      'Well Wisher',
+                      style: TextStyle(fontSize: 15, color: Colors.white),
+                    ),
+                    value: 3,
+                    groupValue: ans,
+                    onChanged: (value) {
+                      ans = 3;
+                    },
+                    selectedTileColor: Colors.blue,
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (ans == 1) {
+                        // The answer is correct
+                        print('You are a Patient');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => pat_det1(),
+                          ),
+                        );
+                      } else if (ans == 2) {
+                        // The answer is wrong
+                        print('You are a Doctor');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => doc_det1(),
+                          ),
+                        );
+                      } else if (ans == 3) {
+                        print('You are a Well Wisher');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => wel_det1(),
+                          ),
+                        );
+                      }
+                    },
+                    child: Text('Submit'),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class pat_det1 extends StatefulWidget {
+  @override
+  pat_det1State createState() => pat_det1State();
+}
+
+class pat_det1State extends State<pat_det1> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to previous screen
+              },
+            )),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    'You are A Patient',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 50),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/pat.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class doc_det1 extends StatefulWidget {
+  @override
+  doc_det1State createState() => doc_det1State();
+}
+
+class doc_det1State extends State<doc_det1> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to previous screen
+              },
+            )),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    'You are A Doctor',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 50),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/doc.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class wel_det1 extends StatefulWidget {
+  @override
+  wel_det1State createState() => wel_det1State();
+}
+
+class wel_det1State extends State<wel_det1> {
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to previous screen
+              },
+            )),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    'You are A Well Wisher',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 50),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/wel.png'), // Specify the image file location here
+                    height: 200,
+                    //fit: BoxFit.cover,
+                  ),
+                ],
+              ),
+            )));
   }
 }

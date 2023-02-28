@@ -1,30 +1,54 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:womenovation/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('VerifyPage', () {
+    testWidgets('should display heading and input box',
+        (WidgetTester tester) async {
+      // Build the widget tree.
+      await tester.pumpWidget(MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      // Find the VerifyPage widget.
+      final verifyPage = find.byType(VerifyPage);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+      // Verify that the widget displays the heading and input box.
+      expect(find.text('Verify'), findsOneWidget);
+      expect(find.text('Enter your phone number:'), findsOneWidget);
+      expect(find.byType(TextField), findsOneWidget);
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    testWidgets('should validate phone number input',
+        (WidgetTester tester) async {
+      // Build the widget tree.
+      await tester.pumpWidget(MyApp());
+
+      // Find the input box widget.
+      final inputBox = find.byType(TextField);
+
+      // Enter an invalid phone number.
+      await tester.enterText(inputBox, '123');
+
+      // Tap the Verify button.
+      await tester.tap(find.text('Verify'));
+
+      // Rebuild the widget tree with the updated state.
+      await tester.pump();
+
+      // Verify that an error message is displayed.
+      expect(find.text('Please enter a valid phone number.'), findsOneWidget);
+
+      // Enter a valid phone number.
+      await tester.enterText(inputBox, '555-555-5555');
+
+      // Tap the Verify button.
+      await tester.tap(find.text('Verify'));
+
+      // Rebuild the widget tree with the updated state.
+      await tester.pump();
+
+      // Verify that the phone number is validated.
+      expect(find.text('Phone number is valid.'), findsOneWidget);
+    });
   });
 }
