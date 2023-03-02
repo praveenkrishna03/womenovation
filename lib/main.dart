@@ -587,6 +587,153 @@ class doc_det1 extends StatefulWidget {
 }
 
 class doc_det1State extends State<doc_det1> {
+  final _namecontroller = TextEditingController();
+  final _areacontroller = TextEditingController();
+  final _emailcontroller = TextEditingController();
+
+  void dispose_name() {
+    _namecontroller.dispose();
+    super.dispose();
+  }
+
+  void dispose_area() {
+    _areacontroller.dispose();
+    super.dispose();
+  }
+
+  void dispose_email() {
+    _emailcontroller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to previous screen
+              },
+            )),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: 16,
+                  ),
+                  /*Text(
+                    'You are A Patient',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),*/
+                  SizedBox(height: 32),
+                  Text(
+                    'Name:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  /*SizedBox(height: 50),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/pat.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),*/
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _namecontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter your name',
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  Text(
+                    'Area:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _areacontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter your area',
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  Text(
+                    'Email:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _emailcontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter your email',
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => doc_det1fi(),
+                        ),
+                      );
+                    },
+                    child: Text('Enter'),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class doc_det1fi extends StatefulWidget {
+  @override
+  doc_det1fiState createState() => doc_det1fiState();
+}
+
+class doc_det1fiState extends State<doc_det1fi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -610,8 +757,10 @@ class doc_det1State extends State<doc_det1> {
                     height: 16,
                   ),
                   Text(
-                    'You are A Doctor',
+                    'You Are Succesfully Regitered As A Doctor',
                     style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
@@ -621,6 +770,18 @@ class doc_det1State extends State<doc_det1> {
                         'lib/assets/images/doc.png'), // Specify the image file location here
                     height: 250,
                     //fit: BoxFit.cover,
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VerifyPage(),
+                        ),
+                      );
+                    },
+                    child: Text('Go to Home Page'),
                   ),
                 ],
               ),
@@ -634,6 +795,183 @@ class wel_det1 extends StatefulWidget {
 }
 
 class wel_det1State extends State<wel_det1> {
+  final _namewwcontroller = TextEditingController();
+  final _namepcontroller = TextEditingController();
+  final _numcontroller = TextEditingController();
+  final _relcontroller = TextEditingController();
+
+  void dispose_name() {
+    _namewwcontroller.dispose();
+    super.dispose();
+  }
+
+  void dispose_age() {
+    _namepcontroller.dispose();
+    super.dispose();
+  }
+
+  void dispose_email() {
+    _numcontroller.dispose();
+    super.dispose();
+  }
+
+  void dispose_rel() {
+    _relcontroller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to previous screen
+              },
+            )),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  /*SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    'You are A Patient',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),*/
+                  SizedBox(height: 32),
+                  Text(
+                    'Your Name:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  /*SizedBox(height: 50),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/pat.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),*/
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _namewwcontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter your name',
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  Text(
+                    'Patient Name:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _namepcontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter patients name',
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  Text(
+                    "Patient's Number:",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _numcontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: "Enter patient's number",
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  Text(
+                    'Relation with Patient:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _relcontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter how the patient related to you',
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => wel_detfi1(),
+                        ),
+                      );
+                    },
+                    child: Text('Submit'),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class wel_detfi1 extends StatefulWidget {
+  @override
+  wel_detfi1State createState() => wel_detfi1State();
+}
+
+class wel_detfi1State extends State<wel_detfi1> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -656,8 +994,10 @@ class wel_det1State extends State<wel_det1> {
                     height: 16,
                   ),
                   Text(
-                    'You are A Well Wisher',
+                    'You Are Succesfully Regitered As A Well Wisher',
                     style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
@@ -665,8 +1005,20 @@ class wel_det1State extends State<wel_det1> {
                   Image(
                     image: AssetImage(
                         'lib/assets/images/wel.png'), // Specify the image file location here
-                    height: 200,
+                    height: 250,
                     //fit: BoxFit.cover,
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VerifyPage(),
+                        ),
+                      );
+                    },
+                    child: Text('Go to Home Page'),
                   ),
                 ],
               ),
