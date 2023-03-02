@@ -1,11 +1,8 @@
-import 'dart:async';
-import 'package:firebase_core/firebase_core.dart';
+//import 'dart:async';
+//import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-Future main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-
+void main() {
   runApp(MyApp());
 }
 
@@ -235,14 +232,24 @@ class pat_det1 extends StatefulWidget {
 }
 
 class pat_det1State extends State<pat_det1> {
-  final List<String> _options = [
-    'Option 1',
-    'Option 2',
-    'Option 3',
-    'Option 4',
-  ];
+  final _namecontroller = TextEditingController();
+  final _agecontroller = TextEditingController();
+  final _emailcontroller = TextEditingController();
 
-  int? _selectedOption;
+  void dispose_name() {
+    _namecontroller.dispose();
+    super.dispose();
+  }
+
+  void dispose_age() {
+    _agecontroller.dispose();
+    super.dispose();
+  }
+
+  void dispose_email() {
+    _emailcontroller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -266,18 +273,99 @@ class pat_det1State extends State<pat_det1> {
                   SizedBox(
                     height: 16,
                   ),
-                  Text(
+                  /*Text(
                     'You are A Patient',
                     style: TextStyle(
                       color: Colors.white,
                     ),
+                  ),*/
+                  SizedBox(height: 32),
+                  Text(
+                    'Name:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
-                  SizedBox(height: 50),
+                  /*SizedBox(height: 50),
                   Image(
                     image: AssetImage(
                         'lib/assets/images/pat.png'), // Specify the image file location here
                     height: 250,
                     //fit: BoxFit.cover,
+                  ),*/
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _namecontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter your name',
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  Text(
+                    'Age:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _agecontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter your age',
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  Text(
+                    'Email:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _emailcontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter your email',
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => pat_det2(),
+                        ),
+                      );
+                    },
+                    child: Text('Enter'),
                   ),
                 ],
               ),
@@ -291,6 +379,153 @@ class pat_det2 extends StatefulWidget {
 }
 
 class pat_det2State extends State<pat_det2> {
+  final _pmcontroller = TextEditingController();
+  final _hcontroller = TextEditingController();
+  final _wcontroller = TextEditingController();
+
+  void dispose_pm() {
+    _pmcontroller.dispose();
+    super.dispose();
+  }
+
+  void dispose_h() {
+    _hcontroller.dispose();
+    super.dispose();
+  }
+
+  void dispose_w() {
+    _wcontroller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to previous screen
+              },
+            )),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  /*SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    'You are A Patient',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),*/
+                  SizedBox(height: 32),
+                  Text(
+                    'Pregnant Month:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  /*SizedBox(height: 50),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/pat.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),*/
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _pmcontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter your pregnant month',
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  Text(
+                    'Height:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _hcontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter your height',
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  Text(
+                    'Weight:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _wcontroller,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter your weight',
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => pat_detfi1(),
+                        ),
+                      );
+                    },
+                    child: Text('Submit'),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class pat_detfi1 extends StatefulWidget {
+  @override
+  pat_detfi1State createState() => pat_detfi1State();
+}
+
+class pat_detfi1State extends State<pat_detfi1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -314,8 +549,10 @@ class pat_det2State extends State<pat_det2> {
                     height: 16,
                   ),
                   Text(
-                    'You are A Patient',
+                    'You Are Succesfully Regitered As A Patient',
                     style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
@@ -325,6 +562,18 @@ class pat_det2State extends State<pat_det2> {
                         'lib/assets/images/pat.png'), // Specify the image file location here
                     height: 250,
                     //fit: BoxFit.cover,
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VerifyPage(),
+                        ),
+                      );
+                    },
+                    child: Text('Go to Home Page'),
                   ),
                 ],
               ),
