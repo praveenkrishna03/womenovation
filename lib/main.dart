@@ -1,7 +1,11 @@
-import 'dart:async';
+//import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(MyApp());
 }
 
@@ -51,6 +55,15 @@ class _VerifyPageState extends State<VerifyPage> {
                         'lib/assets/images/logo.png'), // Specify the image file location here
                     height: 200,
                     fit: BoxFit.cover,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Maternal Care',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 228, 222, 137)),
                   ),
                   SizedBox(height: 32),
                   Text(
@@ -138,7 +151,10 @@ class type_of_userState extends State<type_of_user> {
                   RadioListTile(
                     title: Text(
                       'Patient',
-                      style: TextStyle(fontSize: 15, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: ans == 1 ? Colors.blue : Colors.white,
+                      ),
                     ),
                     value: 1,
                     groupValue: ans,
@@ -149,26 +165,30 @@ class type_of_userState extends State<type_of_user> {
                   RadioListTile(
                     title: Text(
                       'Doctor',
-                      style: TextStyle(fontSize: 15, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: ans == 1 ? Colors.blue : Colors.white,
+                      ),
                     ),
                     value: 2,
                     groupValue: ans,
                     onChanged: (value) {
                       ans = 2;
                     },
-                    selectedTileColor: Colors.blue,
                   ),
                   RadioListTile(
                     title: Text(
                       'Well Wisher',
-                      style: TextStyle(fontSize: 15, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: ans == 1 ? Colors.blue : Colors.white,
+                      ),
                     ),
                     value: 3,
                     groupValue: ans,
                     onChanged: (value) {
                       ans = 3;
                     },
-                    selectedTileColor: Colors.blue,
                   ),
                   SizedBox(height: 16),
                   ElevatedButton(
@@ -215,6 +235,62 @@ class pat_det1 extends StatefulWidget {
 }
 
 class pat_det1State extends State<pat_det1> {
+  final List<String> _options = [
+    'Option 1',
+    'Option 2',
+    'Option 3',
+    'Option 4',
+  ];
+
+  int? _selectedOption;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to previous screen
+              },
+            )),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    'You are A Patient',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 50),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/pat.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class pat_det2 extends StatefulWidget {
+  @override
+  pat_det2State createState() => pat_det2State();
+}
+
+class pat_det2State extends State<pat_det2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -346,5 +422,108 @@ class wel_det1State extends State<wel_det1> {
                 ],
               ),
             )));
+  }
+}
+
+class ChatScreen extends StatefulWidget {
+  @override
+  _ChatScreenState createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  final TextEditingController _textController = TextEditingController();
+  final List<String> _messages = [];
+
+  void _handleSubmitted(String text) {
+    _textController.clear();
+    setState(() {
+      _messages.insert(0, text);
+    });
+  }
+
+  Widget _buildTextComposer() {
+    return IconTheme(
+      data: IconThemeData(color: Theme.of(context).accentColor),
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 8.0),
+        child: Row(
+          children: <Widget>[
+            Flexible(
+              child: TextField(
+                controller: _textController,
+                onSubmitted: _handleSubmitted,
+                decoration:
+                    InputDecoration.collapsed(hintText: "Send a message"),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 4.0),
+              child: IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: () => _handleSubmitted(_textController.text)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Chat"),
+      ),
+      body: Column(
+        children: <Widget>[
+          Flexible(
+            child: ListView.builder(
+              padding: EdgeInsets.all(8.0),
+              reverse: true,
+              itemCount: _messages.length,
+              itemBuilder: (_, int index) => _buildChatBubble(_messages[index]),
+            ),
+          ),
+          Divider(
+            height: 1.0,
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+            ),
+            child: _buildTextComposer(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChatBubble(String message) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            margin: const EdgeInsets.only(right: 16.0),
+            child: CircleAvatar(
+              child: Text("A"),
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text("User"),
+                Container(
+                  margin: EdgeInsets.only(top: 5.0),
+                  child: Text(message),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
