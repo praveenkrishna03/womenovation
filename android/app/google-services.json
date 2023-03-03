@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "424973989650",
-    "project_id": "womenovation-hackathon-56459",
-    "storage_bucket": "womenovation-hackathon-56459.appspot.com"
+    "project_number": "1097954732497",
+    "project_id": "maternal-care-final",
+    "storage_bucket": "maternal-care-final.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:424973989650:android:410b7e2c40a4e6c138a5cb",
+        "mobilesdk_app_id": "1:1097954732497:android:fee83b58f595b9f4f998f0",
         "android_client_info": {
           "package_name": "com.example.womenovation"
         }
       },
       "oauth_client": [
         {
-          "client_id": "424973989650-9cu28qcglcm4gl1f821f7ebbi83brdbg.apps.googleusercontent.com",
+          "client_id": "1097954732497-gn9vpu3rodorhln5tf4266ghkofqfg0t.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC30ZTiy2JWLJ6VyMgNMKXWbMu1sNVhJ9k"
+          "current_key": "AIzaSyAJDUl8OLOIe-ZOhb-Uvu2o4IDNawBbMvk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "424973989650-9cu28qcglcm4gl1f821f7ebbi83brdbg.apps.googleusercontent.com",
+              "client_id": "1097954732497-gn9vpu3rodorhln5tf4266ghkofqfg0t.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
