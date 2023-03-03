@@ -150,13 +150,15 @@ class type_of_userState extends State<type_of_user> {
                       'Patient',
                       style: TextStyle(
                         fontSize: 15,
-                        color: ans == 1 ? Colors.blue : Colors.white,
+                        color: Colors.white,
                       ),
                     ),
                     value: 1,
                     groupValue: ans,
                     onChanged: (value) {
-                      ans = 1;
+                      setState(() {
+                        ans = 1;
+                      });
                     },
                   ),
                   RadioListTile(
@@ -164,13 +166,15 @@ class type_of_userState extends State<type_of_user> {
                       'Doctor',
                       style: TextStyle(
                         fontSize: 15,
-                        color: ans == 1 ? Colors.blue : Colors.white,
+                        color: Colors.white,
                       ),
                     ),
                     value: 2,
                     groupValue: ans,
                     onChanged: (value) {
-                      ans = 2;
+                      setState(() {
+                        ans = 2;
+                      });
                     },
                   ),
                   RadioListTile(
@@ -178,13 +182,15 @@ class type_of_userState extends State<type_of_user> {
                       'Well Wisher',
                       style: TextStyle(
                         fontSize: 15,
-                        color: ans == 1 ? Colors.blue : Colors.white,
+                        color: Colors.white,
                       ),
                     ),
                     value: 3,
                     groupValue: ans,
                     onChanged: (value) {
-                      ans = 3;
+                      setState(() {
+                        ans = 3;
+                      });
                     },
                   ),
                   SizedBox(height: 16),
