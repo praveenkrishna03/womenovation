@@ -1,22 +1,43 @@
-//import 'dart:async';
+import 'dart:async';
+import 'details.dart';
 //import 'package:firebase_core/firebase_core.dart';
+//import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   //WidgetsFlutterBinding.ensureInitialized();
   //await Firebase.initializeApp();
-  runApp(MyApp());
+  if (det_gather == false) {
+    runApp(MyApp());
+  } else {
+    runApp(MyApp2());
+  }
 }
+
+int type = 0;
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Phone Verification',
+      title: 'Details Gathering',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: VerifyPage(),
+      home: type_of_user(),
+    );
+  }
+}
+
+class MyApp2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Second_use',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: type_of_user(),
     );
   }
 }
@@ -38,6 +59,15 @@ class _VerifyPageState extends State<VerifyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to previous screen
+              },
+            )),
         //appBar: AppBar(
         //  title: Text('Verify'),
         //),
@@ -90,14 +120,36 @@ class _VerifyPageState extends State<VerifyPage> {
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => type_of_user(),
-                        ),
-                      );
+                      if (type == 1) {
+                        usr_phone = _phoneNumberController.text;
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => pat_det1(),
+                          ),
+                        );
+                      } else if (type == 2) {
+                        doc_phone = _phoneNumberController.text;
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => doc_det1(),
+                          ),
+                        );
+                      } else if (type == 3) {
+                        wel_phone = _phoneNumberController.text;
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => wel_det1(),
+                          ),
+                        );
+                      }
                     },
-                    child: Text('Verify'),
+                    child: Text('Enter'),
                   ),
                 ],
               ),
@@ -111,7 +163,6 @@ class type_of_user extends StatefulWidget {
 }
 
 class type_of_userState extends State<type_of_user> {
-  int ans = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,9 +189,18 @@ class type_of_userState extends State<type_of_user> {
                     height: 200,
                     fit: BoxFit.cover,
                   ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Maternal Care',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 228, 222, 137)),
+                  ),
                   SizedBox(height: 12),
                   Text(
-                    'Who are you?',
+                    'Who Are You?',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -156,10 +216,10 @@ class type_of_userState extends State<type_of_user> {
                       ),
                     ),
                     value: 1,
-                    groupValue: ans,
+                    groupValue: type,
                     onChanged: (value) {
                       setState(() {
-                        ans = 1;
+                        type = 1;
                       });
                     },
                   ),
@@ -172,10 +232,10 @@ class type_of_userState extends State<type_of_user> {
                       ),
                     ),
                     value: 2,
-                    groupValue: ans,
+                    groupValue: type,
                     onChanged: (value) {
                       setState(() {
-                        ans = 2;
+                        type = 2;
                       });
                     },
                   ),
@@ -188,43 +248,22 @@ class type_of_userState extends State<type_of_user> {
                       ),
                     ),
                     value: 3,
-                    groupValue: ans,
+                    groupValue: type,
                     onChanged: (value) {
                       setState(() {
-                        ans = 3;
+                        type = 3;
                       });
                     },
                   ),
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      if (ans == 1) {
-                        // The answer is correct
-                        print('You are a Patient');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => pat_det1(),
-                          ),
-                        );
-                      } else if (ans == 2) {
-                        // The answer is wrong
-                        print('You are a Doctor');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => doc_det1(),
-                          ),
-                        );
-                      } else if (ans == 3) {
-                        print('You are a Well Wisher');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => wel_det1(),
-                          ),
-                        );
-                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VerifyPage(),
+                        ),
+                      );
                     },
                     child: Text('Submit'),
                   ),
@@ -366,6 +405,9 @@ class pat_det1State extends State<pat_det1> {
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
+                      usr_name = _namecontroller.text;
+                      usr_age = _agecontroller.text;
+                      usr_email = _emailcontroller.text;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -513,6 +555,9 @@ class pat_det2State extends State<pat_det2> {
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
+                      usr_pmonth = _pmcontroller.text;
+                      usr_height = _hcontroller.text;
+                      usr_weight = _wcontroller.text;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -574,10 +619,11 @@ class pat_detfi1State extends State<pat_detfi1> {
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
+                      det_gather = true;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => VerifyPage(),
+                          builder: (context) => usr_home(),
                         ),
                       );
                     },
@@ -782,10 +828,11 @@ class doc_det1fiState extends State<doc_det1fi> {
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
+                      det_gather = true;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => VerifyPage(),
+                          builder: (context) => doc_home(),
                         ),
                       );
                     },
@@ -1019,6 +1066,403 @@ class wel_detfi1State extends State<wel_detfi1> {
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
+                      det_gather = true;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => wel_home(),
+                        ),
+                      );
+                    },
+                    child: Text('Go to Home Page'),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class usr_home extends StatefulWidget {
+  @override
+  usr_homeState createState() => usr_homeState();
+}
+
+class usr_homeState extends State<usr_home> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            title: Text('Maternal Care'),
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => usr_menu(),
+                  ),
+                ); // Navigate back to previous screen
+              },
+            )),
+        body: Stack(children: [
+          Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: GridView.count(
+              crossAxisCount: 2, // 2 columns
+              children: [
+                SizedBox(height: 10),
+                Text(
+                  'Hello,$usr_name!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => usr_menu(),
+                      ),
+                    );
+                  },
+                  child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/physical_health.png'), // Specify the image file location here
+                    height: 200,
+                    //fit: BoxFit.cover,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => usr_menu(),
+                      ),
+                    );
+                  },
+                  child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/for_mom.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => usr_menu(),
+                      ),
+                    );
+                  },
+                  child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/for_child.png'), // Specify the image file location here
+                    height: 300,
+                    //fit: BoxFit.cover,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => usr_menu(),
+                      ),
+                    );
+                  },
+                  child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/fun_time.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 60,
+            right: 60,
+            child: IconButton(
+              icon: Icon(Icons.warning_rounded, size: 90, color: Colors.white),
+              onPressed: () {
+                // add your SOS action here
+              },
+            ),
+          )
+        ]));
+  }
+}
+
+class usr_menu extends StatefulWidget {
+  @override
+  usr_menuState createState() => usr_menuState();
+}
+
+class usr_menuState extends State<usr_menu> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            title: Text('Account Details'),
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            actions: [
+              Row(children: [
+                /*IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pop(context); // Navigate back to previous screen
+                  },
+                ),*/
+                IconButton(
+                  icon: Icon(Icons.info),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => about(),
+                      ),
+                    );
+                    // do something
+                  },
+                ),
+              ])
+            ]),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: 10),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/account.png'), // Specify the image file location here
+                    width: 25,
+                    //fit: BoxFit.cover,
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    'Name  :  $usr_name',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    'Age  :  $usr_age',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    'Email  :  $usr_email',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text('Pregnant Month  :  $usr_pmonth',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      )),
+                  Text('Height  :  $usr_height',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      )),
+                  Text('Weight  :  $usr_weight',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      )),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      det_gather = true;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VerifyPage(),
+                        ),
+                      );
+                    },
+                    child: Text('Go to Home Page'),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class about extends StatefulWidget {
+  @override
+  aboutState createState() => aboutState();
+}
+
+class aboutState extends State<about> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          title: Text('About'),
+          backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+          shadowColor: Colors.transparent,
+          actions: [
+            Row(children: [
+              /*IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pop(context); // Navigate back to previous screen
+                  },
+                ),*/
+              IconButton(
+                icon: Icon(Icons.info),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => about(),
+                    ),
+                  );
+                  // do something
+                },
+              ),
+            ])
+          ]),
+    );
+  }
+}
+
+class doc_home extends StatefulWidget {
+  @override
+  doc_homeState createState() => doc_homeState();
+}
+
+class doc_homeState extends State<doc_home> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to previous screen
+              },
+            )),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    'You Are Succesfully Regitered As A Well Wisher',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 50),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/wel.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      det_gather = true;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VerifyPage(),
+                        ),
+                      );
+                    },
+                    child: Text('Go to Home Page'),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class wel_home extends StatefulWidget {
+  @override
+  wel_homeState createState() => wel_homeState();
+}
+
+class wel_homeState extends State<wel_home> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to previous screen
+              },
+            )),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    'You Are Succesfully Regitered As A Well Wisher',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 50),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/wel.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      det_gather = true;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
