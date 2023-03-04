@@ -1,18 +1,24 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher_android/url_launcher_android.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'details.dart';
-//import 'package:firebase_core/firebase_core.dart';
-//import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  //WidgetsFlutterBinding.ensureInitialized();
-  //await Firebase.initializeApp();
-  if (det_gather == false) {
-    runApp(MyApp());
-  } else {
-    runApp(MyApp2());
-  }
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
+
+FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+CollectionReference user = FirebaseFirestore.instance.collection("user");
+CollectionReference doctor = FirebaseFirestore.instance.collection("doctor");
+CollectionReference wellwisher =
+    FirebaseFirestore.instance.collection("wellwisher");
 
 int type = 0;
 
@@ -24,20 +30,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: type_of_user(),
-    );
-  }
-}
-
-class MyApp2 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Second_use',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: type_of_user(),
+      home: new_old(),
     );
   }
 }
@@ -78,7 +71,7 @@ class _VerifyPageState extends State<VerifyPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(height: 10),
+                  SizedBox(height: 0),
                   Image(
                     image: AssetImage(
                         'lib/assets/images/logo.png'), // Specify the image file location here
@@ -122,7 +115,6 @@ class _VerifyPageState extends State<VerifyPage> {
                     onPressed: () {
                       if (type == 1) {
                         usr_phone = _phoneNumberController.text;
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -131,7 +123,6 @@ class _VerifyPageState extends State<VerifyPage> {
                         );
                       } else if (type == 2) {
                         doc_phone = _phoneNumberController.text;
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -139,8 +130,7 @@ class _VerifyPageState extends State<VerifyPage> {
                           ),
                         );
                       } else if (type == 3) {
-                        wel_phone = _phoneNumberController.text;
-
+                        wel_phone = _phoneNumberController.text.toString();
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -150,6 +140,207 @@ class _VerifyPageState extends State<VerifyPage> {
                       }
                     },
                     child: Text('Enter'),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class det_get extends StatefulWidget {
+  @override
+  det_getState createState() => det_getState();
+}
+
+class det_getState extends State<det_get> {
+  final _phoneNumberController = TextEditingController();
+  String tempnum = '';
+  @override
+  void dispose() {
+    _phoneNumberController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+
+        //appBar: AppBar(
+        //  title: Text('Verify'),
+        //),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: 0),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/logo.png'), // Specify the image file location here
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Maternal Care',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 228, 222, 137)),
+                  ),
+                  SizedBox(height: 32),
+                  Text(
+                    'Enter your phone number:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
+                      color: Color.fromARGB(
+                          255, 126, 123, 123), // Set the input text color here
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _phoneNumberController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintStyle:
+                          TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
+                      hintText: 'Enter phone number',
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final tempnum = _phoneNumberController.text;
+                      firestore
+                          .collection('users')
+                          .where('phone', isEqualTo: tempnum)
+                          .get()
+                          .then((QuerySnapshot querySnapshot) {
+                        querySnapshot.docs.forEach((doc) {
+                          final data = doc.data() as Map<String, dynamic>;
+                          final usr_name = data['name'];
+                          print('Name: $usr_name');
+                        });
+                      });
+
+                      /*final tempnum = _phoneNumberController.text;
+                      String number = tempnum.toString();
+                      final userSnapshot = await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc()
+                          .get();
+
+                      if (userSnapshot.exists) {
+                        final userData = userSnapshot.data();
+                        if (userData != null) {
+                          usr_name = userData['name'].toString();
+                          usr_email = userData['email'].toString();
+                          usr_phone = userData['phone'].toString();
+                          usr_pmonth = userData['pmonth'].toString();
+                          usr_age = userData['age'].toString();
+                          usr_height = userData['height'].toString();
+                          usr_weight = userData['weight'].toString();
+                          print('successfully got');
+                        }
+                      } else {}*/
+                      print('$usr_name');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => usr_home(),
+                        ),
+                      );
+                    },
+                    child: Text('Enter'),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
+
+class new_old extends StatefulWidget {
+  @override
+  new_oldState createState() => new_oldState();
+}
+
+class new_oldState extends State<new_old> {
+  final _phoneNumberController = TextEditingController();
+
+  @override
+  void dispose() {
+    _phoneNumberController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to previous screen
+              },
+            )),
+        //appBar: AppBar(
+        //  title: Text('Verify'),
+        //),
+        body: Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: 0),
+                  Image(
+                    image: AssetImage(
+                        'lib/assets/images/logo.png'), // Specify the image file location here
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Maternal Care',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 228, 222, 137)),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => det_get(),
+                        ),
+                      );
+                    },
+                    child: Text('Already Have An Account'),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => type_of_user(),
+                        ),
+                      );
+                    },
+                    child: Text('New Account'),
                   ),
                 ],
               ),
@@ -349,7 +540,7 @@ class pat_det1State extends State<pat_det1> {
                     ),
                     cursorColor: Colors.white,
                     controller: _namecontroller,
-                    keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.name,
                     decoration: InputDecoration(
                       hintStyle:
                           TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
@@ -395,7 +586,7 @@ class pat_det1State extends State<pat_det1> {
                     ),
                     cursorColor: Colors.white,
                     controller: _emailcontroller,
-                    keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       hintStyle:
                           TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
@@ -526,7 +717,7 @@ class pat_det2State extends State<pat_det2> {
                     decoration: InputDecoration(
                       hintStyle:
                           TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
-                      hintText: 'Enter your height',
+                      hintText: 'Enter your height in M',
                     ),
                   ),
                   SizedBox(height: 32),
@@ -549,15 +740,26 @@ class pat_det2State extends State<pat_det2> {
                     decoration: InputDecoration(
                       hintStyle:
                           TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
-                      hintText: 'Enter your weight',
+                      hintText: 'Enter your weight in KG',
                     ),
                   ),
                   SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       usr_pmonth = _pmcontroller.text;
                       usr_height = _hcontroller.text;
                       usr_weight = _wcontroller.text;
+
+                      await user.add({
+                        'phone': '$usr_phone',
+                        'name': '$usr_name',
+                        'age': '$usr_age',
+                        'email': '$usr_email',
+                        'pmonth': '$usr_pmonth',
+                        'height': '$usr_height',
+                        'weight': '$usr_weight'
+                      }).then((value) => print('user Added'));
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -641,22 +843,22 @@ class doc_det1 extends StatefulWidget {
 }
 
 class doc_det1State extends State<doc_det1> {
-  final _namecontroller = TextEditingController();
-  final _areacontroller = TextEditingController();
-  final _emailcontroller = TextEditingController();
+  final _namecontroller1 = TextEditingController();
+  final _areacontroller1 = TextEditingController();
+  final _emailcontroller1 = TextEditingController();
 
   void dispose_name() {
-    _namecontroller.dispose();
+    _namecontroller1.dispose();
     super.dispose();
   }
 
   void dispose_area() {
-    _areacontroller.dispose();
+    _areacontroller1.dispose();
     super.dispose();
   }
 
   void dispose_email() {
-    _emailcontroller.dispose();
+    _emailcontroller1.dispose();
     super.dispose();
   }
 
@@ -710,8 +912,8 @@ class doc_det1State extends State<doc_det1> {
                           255, 126, 123, 123), // Set the input text color here
                     ),
                     cursorColor: Colors.white,
-                    controller: _namecontroller,
-                    keyboardType: TextInputType.phone,
+                    controller: _namecontroller1,
+                    keyboardType: TextInputType.name,
                     decoration: InputDecoration(
                       hintStyle:
                           TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
@@ -733,8 +935,8 @@ class doc_det1State extends State<doc_det1> {
                           255, 126, 123, 123), // Set the input text color here
                     ),
                     cursorColor: Colors.white,
-                    controller: _areacontroller,
-                    keyboardType: TextInputType.phone,
+                    controller: _areacontroller1,
+                    keyboardType: TextInputType.name,
                     decoration: InputDecoration(
                       hintStyle:
                           TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
@@ -756,8 +958,8 @@ class doc_det1State extends State<doc_det1> {
                           255, 126, 123, 123), // Set the input text color here
                     ),
                     cursorColor: Colors.white,
-                    controller: _emailcontroller,
-                    keyboardType: TextInputType.phone,
+                    controller: _emailcontroller1,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       hintStyle:
                           TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
@@ -766,7 +968,17 @@ class doc_det1State extends State<doc_det1> {
                   ),
                   SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      final doc_name = _namecontroller1.text;
+                      final doc_email = _emailcontroller1.text;
+                      final doc_area = _areacontroller1.text;
+                      await doctor.add({
+                        'phone': '$doc_phone',
+                        'name': '$doc_name',
+                        'email': '$doc_email',
+                        'area': '$doc_area'
+                      }).then((value) => print('Doctor Added'));
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -926,7 +1138,7 @@ class wel_det1State extends State<wel_det1> {
                     ),
                     cursorColor: Colors.white,
                     controller: _namewwcontroller,
-                    keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.name,
                     decoration: InputDecoration(
                       hintStyle:
                           TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
@@ -949,7 +1161,7 @@ class wel_det1State extends State<wel_det1> {
                     ),
                     cursorColor: Colors.white,
                     controller: _namepcontroller,
-                    keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.name,
                     decoration: InputDecoration(
                       hintStyle:
                           TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
@@ -995,7 +1207,7 @@ class wel_det1State extends State<wel_det1> {
                     ),
                     cursorColor: Colors.white,
                     controller: _relcontroller,
-                    keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.name,
                     decoration: InputDecoration(
                       hintStyle:
                           TextStyle(color: Color.fromARGB(255, 109, 109, 109)),
@@ -1004,7 +1216,20 @@ class wel_det1State extends State<wel_det1> {
                   ),
                   SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      final wel_name = _namewwcontroller.text;
+                      final wel_pname = _namepcontroller.text;
+                      final wel_pphone = _numcontroller.text;
+                      final wel_relation = _relcontroller.text;
+
+                      await wellwisher.add({
+                        'phone': '$wel_phone',
+                        'name': '$wel_name',
+                        'pname': '$wel_pname',
+                        'pphone': '$wel_pphone',
+                        'relation': '$wel_relation'
+                      }).then((value) => print('wel Added'));
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -1088,13 +1313,31 @@ class usr_home extends StatefulWidget {
 }
 
 class usr_homeState extends State<usr_home> {
+  static const String _phoneNumber = 'tel:108';
+
+  Future<void> _launchDialer() async {
+    int numDocs = await doctor.get().then((querySnapshot) {
+      return querySnapshot.size;
+    });
+
+    try {
+      if (await canLaunch(_phoneNumber)) {
+        await launch(_phoneNumber);
+      } else {
+        throw 'Could not launch $_phoneNumber';
+      }
+    } catch (error) {
+      print('Error launching phone dialer: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text('Maternal Care'),
             backgroundColor: Color.fromRGBO(21, 29, 54, 1),
             shadowColor: Colors.transparent,
+            title: Text('Maternal Care'),
             leading: IconButton(
               icon: Icon(Icons.menu),
               onPressed: () {
@@ -1103,87 +1346,165 @@ class usr_homeState extends State<usr_home> {
                   MaterialPageRoute(
                     builder: (context) => usr_menu(),
                   ),
-                ); // Navigate back to previous screen
+                );
+                // Add your onPressed code here
               },
-            )),
+            ),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.info),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => about(),
+                    ),
+                  );
+                  // Add your onPressed code here
+                },
+              ),
+            ]),
         body: Stack(children: [
+          Center(
+            child: Text(
+              'Welcome $usr_name !',
+              style: TextStyle(fontSize: 32, color: Colors.white),
+            ),
+          ),
           Container(
             color: Color.fromRGBO(21, 29, 54, 1),
             child: GridView.count(
               crossAxisCount: 2, // 2 columns
+
               children: [
-                SizedBox(height: 10),
-                Text(
-                  'Hello,$usr_name!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                Center(
+                  child: Text(
+                    'Welcome ',
+                    style: TextStyle(fontSize: 32, color: Colors.white),
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    '$usr_name !',
+                    style: TextStyle(fontSize: 32, color: Colors.white),
+                  ),
                 ),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => usr_menu(),
+                        builder: (context) => phy(),
                       ),
                     );
                   },
-                  child: Image(
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/physical_health.png',
+                        width: 150,
+                        height: 150,
+                      ),
+                      Text(
+                        'Physical Health',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  /*child: Image(
                     image: AssetImage(
                         'lib/assets/images/physical_health.png'), // Specify the image file location here
                     height: 200,
                     //fit: BoxFit.cover,
-                  ),
+                  ),*/
                 ),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => usr_menu(),
+                        builder: (context) => for_mom(),
                       ),
                     );
                   },
-                  child: Image(
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/for_mom.png',
+                        width: 150,
+                        height: 150,
+                      ),
+                      Text(
+                        'For mom',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+
+                  /*child: Image(
                     image: AssetImage(
                         'lib/assets/images/for_mom.png'), // Specify the image file location here
                     height: 250,
                     //fit: BoxFit.cover,
-                  ),
+                  ),*/
                 ),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => usr_menu(),
+                        builder: (context) => for_child(),
                       ),
                     );
                   },
-                  child: Image(
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/for_child.png',
+                        width: 150,
+                        height: 150,
+                      ),
+                      Text(
+                        'For child',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  /*child: Image(
                     image: AssetImage(
                         'lib/assets/images/for_child.png'), // Specify the image file location here
                     height: 300,
                     //fit: BoxFit.cover,
-                  ),
+                  ),*/
                 ),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => usr_menu(),
+                        builder: (context) => fun_time(),
                       ),
                     );
                   },
-                  child: Image(
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/fun_time.png',
+                        width: 150,
+                        height: 150,
+                      ),
+                      Text(
+                        'Fun Time',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  /*child: Image(
                     image: AssetImage(
                         'lib/assets/images/fun_time.png'), // Specify the image file location here
                     height: 250,
                     //fit: BoxFit.cover,
-                  ),
+                  ),*/
                 ),
               ],
             ),
@@ -1192,10 +1513,9 @@ class usr_homeState extends State<usr_home> {
             bottom: 60,
             right: 60,
             child: IconButton(
-              icon: Icon(Icons.warning_rounded, size: 90, color: Colors.white),
-              onPressed: () {
-                // add your SOS action here
-              },
+              color: Colors.white,
+              icon: Icon(Icons.sos, size: 90, color: Colors.white),
+              onPressed: () => _launchDialer(),
             ),
           )
         ]));
@@ -1255,7 +1575,7 @@ class usr_menuState extends State<usr_menu> {
                     height: 16,
                   ),
                   Text(
-                    'Name  :  $usr_name',
+                    'NAME  :  $usr_name',
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
@@ -1263,7 +1583,7 @@ class usr_menuState extends State<usr_menu> {
                     ),
                   ),
                   Text(
-                    'Age  :  $usr_age',
+                    'AGE  :  $usr_age',
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
@@ -1271,47 +1591,591 @@ class usr_menuState extends State<usr_menu> {
                     ),
                   ),
                   Text(
-                    'Email  :  $usr_email',
+                    'EMAIL  :  $usr_email',
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
-                  Text('Pregnant Month  :  $usr_pmonth',
+                  Text('PREGNANT MONTH  :  $usr_pmonth',
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       )),
-                  Text('Height  :  $usr_height',
+                  Text('HEIGHT  :  $usr_height',
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       )),
-                  Text('Weight  :  $usr_weight',
+                  Text('WEIGHT  :  $usr_weight',
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       )),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      det_gather = true;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => VerifyPage(),
-                        ),
-                      );
-                    },
-                    child: Text('Go to Home Page'),
-                  ),
                 ],
               ),
             )));
+  }
+}
+
+class phy_hlt extends StatefulWidget {
+  @override
+  phy_hltState createState() => phy_hltState();
+}
+
+class phy_hltState extends State<phy_hlt> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            title: Text('Physical Health'),
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            actions: [
+              Row(children: [
+                /*IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pop(context); // Navigate back to previous screen
+                  },
+                ),*/
+                IconButton(
+                  icon: Icon(Icons.info),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => about(),
+                      ),
+                    );
+                    // do something
+                  },
+                ),
+              ])
+            ]),
+        body: Stack(children: [
+          Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: GridView.count(
+              crossAxisCount: 1, // 2 columns
+
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => phy_hlt(),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/physical_health.png',
+                        width: 150,
+                        height: 150,
+                      ),
+                      Text(
+                        'Physical Health',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  /*child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/physical_health.png'), // Specify the image file location here
+                    height: 200,
+                    //fit: BoxFit.cover,
+                  ),*/
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => usr_menu(),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/for_mom.png',
+                        width: 150,
+                        height: 150,
+                      ),
+                      Text(
+                        'For mom',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+
+                  /*child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/for_mom.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),*/
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => usr_menu(),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/for_child.png',
+                        width: 150,
+                        height: 150,
+                      ),
+                      Text(
+                        'For child',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  /*child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/for_child.png'), // Specify the image file location here
+                    height: 300,
+                    //fit: BoxFit.cover,
+                  ),*/
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => usr_menu(),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/fun_time.png',
+                        width: 150,
+                        height: 150,
+                      ),
+                      Text(
+                        'Fun Time',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  /*child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/fun_time.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),*/
+                ),
+              ],
+            ),
+          ),
+        ]));
+  }
+}
+
+class for_mom extends StatefulWidget {
+  @override
+  for_momState createState() => for_momState();
+}
+
+class for_momState extends State<for_mom> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            title: Text('For Mom'),
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            actions: [
+              Row(children: [
+                /*IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pop(context); // Navigate back to previous screen
+                  },
+                ),*/
+                IconButton(
+                  icon: Icon(Icons.info),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => about(),
+                      ),
+                    );
+                    // do something
+                  },
+                ),
+              ])
+            ]),
+        body: Stack(children: [
+          Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: GridView.count(
+              crossAxisCount: 1, // 2 columns
+
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => m_inst(),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/instructions.png',
+                        width: 250,
+                        height: 250,
+                      ),
+                      Text(
+                        'Instructions & Checkups',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  /*child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/physical_health.png'), // Specify the image file location here
+                    height: 200,
+                    //fit: BoxFit.cover,
+                  ),*/
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DoctorListPage(),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/consult.png',
+                        width: 250,
+                        height: 250,
+                      ),
+                      Text(
+                        'Consult with Doctor',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+
+                  /*child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/for_mom.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),*/
+                ),
+              ],
+            ),
+          ),
+        ]));
+  }
+}
+
+class for_child extends StatefulWidget {
+  @override
+  for_childState createState() => for_childState();
+}
+
+class for_childState extends State<for_child> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            title: Text('For Child'),
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            actions: [
+              Row(children: [
+                /*IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pop(context); // Navigate back to previous screen
+                  },
+                ),*/
+                IconButton(
+                  icon: Icon(Icons.info),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => about(),
+                      ),
+                    );
+                    // do something
+                  },
+                ),
+              ])
+            ]),
+        body: Stack(children: [
+          Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: GridView.count(
+              crossAxisCount: 1, // 2 columns
+
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => c_inst(),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/instructions.png',
+                        width: 250,
+                        height: 250,
+                      ),
+                      Text(
+                        'Instructions',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  /*child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/physical_health.png'), // Specify the image file location here
+                    height: 200,
+                    //fit: BoxFit.cover,
+                  ),*/
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DoctorListPage(),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/consult.png',
+                        width: 250,
+                        height: 250,
+                      ),
+                      Text(
+                        'Consult with Doctor',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+
+                  /*child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/for_mom.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),*/
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => c_vac(),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/vaccines.png',
+                        width: 250,
+                        height: 250,
+                      ),
+                      Text(
+                        'Vaccines',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  /*child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/for_child.png'), // Specify the image file location here
+                    height: 300,
+                    //fit: BoxFit.cover,
+                  ),*/
+                ),
+              ],
+            ),
+          ),
+        ]));
+  }
+}
+
+class fun_time extends StatefulWidget {
+  @override
+  fun_timeState createState() => fun_timeState();
+}
+
+class fun_timeState extends State<fun_time> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            title: Text('Fun Time'),
+            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+            shadowColor: Colors.transparent,
+            actions: [
+              Row(children: [
+                /*IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pop(context); // Navigate back to previous screen
+                  },
+                ),*/
+                IconButton(
+                  icon: Icon(Icons.info),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => about(),
+                      ),
+                    );
+                    // do something
+                  },
+                ),
+              ])
+            ]),
+        body: Stack(children: [
+          Container(
+            color: Color.fromRGBO(21, 29, 54, 1),
+            child: GridView.count(
+              crossAxisCount: 1, // 2 columns
+
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    const url1 =
+                        'https://play.google.com/store/apps/details?id=com.andregal.android.billard';
+                    if (await canLaunch(url1)) {
+                      await launch(url1);
+                    } else {
+                      throw 'Could not launch $url1';
+                    }
+                  },
+                  child: Column(
+                    children: [
+                      Image(
+                        image: AssetImage('lib/assets/images/game_1.png'),
+                        width: 350,
+                        height: 350,
+                        // other properties like width, height, etc.
+                      ),
+                      /*Image.asset(
+                        'lib/assets/images/game_1.png',
+                        width: 350,
+                        height: 350,
+                      ),*/
+                      Text(
+                        'Roll The Ball',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  /*child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/physical_health.png'), // Specify the image file location here
+                    height: 200,
+                    //fit: BoxFit.cover,
+                  ),*/
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    const url2 =
+                        'https://play.google.com/store/apps/details?id=com.LoopGames.game2048';
+                    if (await canLaunch(url2)) {
+                      await launch(url2);
+                    } else {
+                      throw 'Could not launch $url2';
+                    }
+                  },
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/game_2.png',
+                        width: 350,
+                        height: 350,
+                      ),
+                      Text(
+                        '2048',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+
+                  /*child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/for_mom.png'), // Specify the image file location here
+                    height: 250,
+                    //fit: BoxFit.cover,
+                  ),*/
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    const url3 =
+                        'https://play.google.com/store/apps/details?id=com.cg.antistress.mind.relaxing.games';
+                    if (await canLaunch(url3)) {
+                      await launch(url3);
+                    } else {
+                      throw 'Could not launch $url3';
+                    }
+                  },
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'lib/assets/images/game_3.png',
+                        width: 350,
+                        height: 350,
+                      ),
+                      Text(
+                        'Antistress Games',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  /*child: Image(
+                    image: AssetImage(
+                        'lib/assets/images/for_child.png'), // Specify the image file location here
+                    height: 300,
+                    //fit: BoxFit.cover,
+                  ),*/
+                ),
+              ],
+            ),
+          ),
+        ]));
   }
 }
 
@@ -1578,5 +2442,525 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
+  }
+}
+
+class m_inst extends StatefulWidget {
+  @override
+  m_instState createState() => m_instState();
+}
+
+class m_instState extends State<m_inst> {
+  List<bool> _isCheckedList = [false, false, false, false, false];
+
+  bool newValue = false;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+        shadowColor: Colors.transparent,
+        title: Text('Instructions & Checkups'),
+      ),
+      body: Column(
+        children: [
+          SizedBox(height: 10),
+          Text(
+            'First type:',
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          CheckboxListTile(
+            checkColor: Colors.white,
+            tileColor: Colors.white,
+            title: Text('Checkbox 1'),
+            value: _isCheckedList[0],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[0] = true;
+              });
+            },
+          ),
+          CheckboxListTile(
+            checkColor: Colors.white,
+            tileColor: Colors.white,
+            title: Text('Checkbox 2'),
+            value: _isCheckedList[1],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[1] = true;
+              });
+            },
+          ),
+          CheckboxListTile(
+            checkColor: Colors.white,
+            tileColor: Colors.white,
+            title: Text('Checkbox 3'),
+            value: _isCheckedList[2],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[2] = true;
+              });
+            },
+          ),
+          SizedBox(height: 10),
+          Text(
+            'Second type:',
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          CheckboxListTile(
+            checkColor: Colors.white,
+            tileColor: Colors.white,
+            title: Text('Checkbox 4'),
+            value: _isCheckedList[3],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[3] = true;
+              });
+            },
+          ),
+          CheckboxListTile(
+            checkColor: Colors.white,
+            tileColor: Colors.white,
+            title: Text('Checkbox 5'),
+            value: _isCheckedList[4],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[4] = true;
+              });
+            },
+          ),
+        ],
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              // Add code to perform an action when the "Add" button is pressed
+            },
+            child: Icon(Icons.add),
+          ),
+          SizedBox(height: 10),
+          ElevatedButton(
+              onPressed: () {
+                // Add code to perform an action when the "Update" button is pressed
+              },
+              child: Text("Update")),
+        ],
+      ),
+    );
+  }
+}
+
+class c_inst extends StatefulWidget {
+  @override
+  c_instState createState() => c_instState();
+}
+
+class c_instState extends State<c_inst> {
+  List<bool> _isCheckedList = [false, false, false, false, false];
+
+  bool newValue = false;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+        title: Text('My Page'),
+      ),
+      body: Column(
+        children: [
+          SizedBox(height: 10),
+          Text(
+            'First type:',
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('Checkbox 1'),
+            value: _isCheckedList[0],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[0] = true;
+              });
+            },
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('Checkbox 2'),
+            value: _isCheckedList[1],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[1] = true;
+              });
+            },
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('Checkbox 3'),
+            value: _isCheckedList[2],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[2] = true;
+              });
+            },
+          ),
+          SizedBox(height: 10),
+          Text(
+            'Second type:',
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('Checkbox 4'),
+            value: _isCheckedList[3],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[3] = true;
+              });
+            },
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('Checkbox 5'),
+            value: _isCheckedList[4],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[4] = true;
+              });
+            },
+          ),
+        ],
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              // Add code to perform an action when the "Add" button is pressed
+            },
+            child: Icon(Icons.add),
+          ),
+          SizedBox(height: 10),
+          ElevatedButton(
+              onPressed: () {
+                // Add code to perform an action when the "Update" button is pressed
+              },
+              child: Text("Update")),
+        ],
+      ),
+    );
+  }
+}
+
+class c_vac extends StatefulWidget {
+  @override
+  c_vacState createState() => c_vacState();
+}
+
+class c_vacState extends State<c_vac> {
+  List<bool> _isCheckedList = [false, false, false, false, false];
+
+  bool newValue = false;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+        title: Text('My Page'),
+      ),
+      body: Column(
+        children: [
+          SizedBox(height: 10),
+          Text(
+            'First type:',
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('Checkbox 1'),
+            value: _isCheckedList[0],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[0] = true;
+              });
+            },
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('Checkbox 2'),
+            value: _isCheckedList[1],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[1] = true;
+              });
+            },
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('Checkbox 3'),
+            value: _isCheckedList[2],
+            onChanged: (newValue) {
+              setState(() {
+                _isCheckedList[2] = true;
+              });
+            },
+          ),
+        ],
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              // Add code to perform an action when the "Add" button is pressed
+            },
+            child: Icon(Icons.add),
+          ),
+          SizedBox(height: 10),
+          ElevatedButton(
+              onPressed: () {
+                // Add code to perform an action when the "Update" button is pressed
+              },
+              child: Text("Update")),
+        ],
+      ),
+    );
+  }
+}
+
+class DoctorListPage extends StatefulWidget {
+  @override
+  _DoctorListPageState createState() => _DoctorListPageState();
+}
+
+class _DoctorListPageState extends State<DoctorListPage> {
+  int docnum = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    getDoctorCount();
+  }
+
+  void getDoctorCount() async {
+    // Get a reference to the "doctor" collection
+    CollectionReference doctorsRef =
+        FirebaseFirestore.instance.collection('doctor');
+
+    // Get the number of documents in the "doctor" collection
+    int numDocuments = await doctorsRef.get().then((querySnapshot) {
+      return querySnapshot.size;
+    });
+
+    setState(() {
+      docnum = numDocuments;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+        title: Text('Doctor List'),
+      ),
+      body: docnum == 0
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: docnum,
+              itemBuilder: (BuildContext context, int index) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatScreen(),
+                      ),
+                    );
+                    // Handle gesture detector onTap event here
+                    print('Tapped on doctor $index');
+                  },
+                  child: ListTile(
+                    tileColor: Colors.white,
+                    title: Text('Doctor ${index + 1}'),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+}
+
+class phy extends StatefulWidget {
+  @override
+  phyState createState() => phyState();
+}
+
+class phyState extends State<phy> {
+  List<String> tabletNames = ['Tablet 1', 'Tablet 2', 'Tablet 3', 'Tablet 4'];
+  List<int> tabletsRemaining = [10, 20, 30, 40];
+  List<bool> remainders = [false, true, false, true];
+  TextEditingController box1Controller = TextEditingController();
+  TextEditingController box2Controller = TextEditingController();
+  TextEditingController box3Controller = TextEditingController();
+  TextEditingController box4Controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+          title: Text('Physical Health'),
+        ),
+        body: Container(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                SizedBox(height: 1.0),
+                Text('Age'),
+                TextFormField(
+                  controller: box1Controller,
+                  decoration: InputDecoration(
+                    labelText: '$usr_age',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    usr_age = box1Controller.text;
+                  },
+                  icon: Icon(Icons.update),
+                  label: Text('Update'),
+                ),
+                Text('Pregnant Month'),
+                SizedBox(height: 1.0),
+                TextFormField(
+                  controller: box2Controller,
+                  decoration: InputDecoration(
+                    labelText: '$usr_pmonth',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    usr_pmonth = box2Controller.text;
+                  },
+                  icon: Icon(Icons.update),
+                  label: Text('Update'),
+                ),
+                SizedBox(height: 1.0),
+                Text('Height'),
+                TextFormField(
+                  controller: box3Controller,
+                  decoration: InputDecoration(
+                    labelText: '$usr_height',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    usr_height = box3Controller.text;
+                  },
+                  icon: Icon(Icons.update),
+                  label: Text('Update'),
+                ),
+                SizedBox(height: 1.0),
+                Text('Weight'),
+                TextFormField(
+                  controller: box4Controller,
+                  decoration: InputDecoration(
+                    labelText: '$usr_weight',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    usr_weight = box4Controller.text;
+                  },
+                  icon: Icon(Icons.update),
+                  label: Text('Update'),
+                ),
+                SizedBox(height: 32.0),
+                Table(
+                  border: TableBorder.all(),
+                  columnWidths: {
+                    0: FlexColumnWidth(3),
+                    1: FlexColumnWidth(2),
+                    2: FlexColumnWidth(2),
+                  },
+                  children: [
+                    TableRow(
+                      children: [
+                        TableCell(
+                          child: Text('Tablet Name'),
+                        ),
+                        TableCell(
+                          child: Text('Tablets Remaining'),
+                        ),
+                        TableCell(
+                          child: Text('Remainder'),
+                        ),
+                      ],
+                    ),
+                    for (int i = 0; i < tabletNames.length; i++)
+                      TableRow(
+                        children: [
+                          TableCell(
+                            child: Text(tabletNames[i]),
+                          ),
+                          TableCell(
+                            child: TextFormField(
+                              initialValue: tabletsRemaining[i].toString(),
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Checkbox(
+                              value: remainders[i],
+                              onChanged: (value) {
+                                setState(() {
+                                  remainders[i] = value!;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      tabletNames.add('New Tablet');
+                      tabletsRemaining.add(0);
+                      remainders.add(false);
+                    });
+                  },
+                  icon: Icon(Icons.add),
+                  label: Text('Add Row'),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }

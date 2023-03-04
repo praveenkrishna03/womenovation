@@ -10,9 +10,13 @@ String usr_weight = '';
 //doctor details
 String doc_phone = '';
 String doc_name = '';
-
+String doc_area = '';
+String doc_email = '';
 //well wisher details
 String wel_phone = '';
 String wel_name = '';
+String wel_pname = '';
+String wel_pphone = '';
+String wel_relation = '';
 
 bool det_gather = false;
