@@ -284,14 +284,9 @@ class new_oldState extends State<new_old> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
-            shadowColor: Colors.transparent,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context); // Navigate back to previous screen
-              },
-            )),
+          backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+          shadowColor: Colors.transparent,
+        ),
         //appBar: AppBar(
         //  title: Text('Verify'),
         //),
