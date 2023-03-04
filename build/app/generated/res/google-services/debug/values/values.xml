@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">1097954732497-gn9vpu3rodorhln5tf4266ghkofqfg0t.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">1097954732497</string>
+    <string name="google_api_key" translatable="false">AIzaSyAJDUl8OLOIe-ZOhb-Uvu2o4IDNawBbMvk</string>
+    <string name="google_app_id" translatable="false">1:1097954732497:android:fee83b58f595b9f4f998f0</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAJDUl8OLOIe-ZOhb-Uvu2o4IDNawBbMvk</string>
+    <string name="google_storage_bucket" translatable="false">maternal-care-final.appspot.com</string>
+    <string name="project_id" translatable="false">maternal-care-final</string>
+</resources>
