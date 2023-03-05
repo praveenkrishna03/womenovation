@@ -37,11 +37,12 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
 class VerifyPage extends StatefulWidget {
   @override
   _VerifyPageState createState() => _VerifyPageState();
 }
-
+//For Verifying The Phone Number
 class _VerifyPageState extends State<VerifyPage> {
   final _phoneNumberController = TextEditingController();
 
