@@ -6,6 +6,7 @@ import 'details.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -1310,6 +1311,32 @@ class usr_home extends StatefulWidget {
 class usr_homeState extends State<usr_home> {
   static const String _phoneNumber = 'tel:108';
 
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  @override
+  void initState() {
+    super.initState();
+
+    var initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    var initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  void _showNotification() async {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'channel_id', 'channel_name',
+        importance: Importance.max, priority: Priority.high, ticker: 'ticker');
+    var platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+        0, 'Urgent', '!!Patient got pregnancy Pain!!', platformChannelSpecifics,
+        payload: 'notification_payload');
+  }
+
   Future<void> _launchDialer() async {
     int numDocs = await doctor.get().then((querySnapshot) {
       return querySnapshot.size;
@@ -1510,7 +1537,10 @@ class usr_homeState extends State<usr_home> {
             child: IconButton(
               color: Colors.white,
               icon: Icon(Icons.sos, size: 90, color: Colors.white),
-              onPressed: () => _launchDialer(),
+              onPressed: () {
+                _showNotification();
+                _launchDialer();
+              },
             ),
           )
         ]));
@@ -2219,59 +2249,61 @@ class doc_home extends StatefulWidget {
 }
 
 class doc_homeState extends State<doc_home> {
+  int docnum = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    getDoctorCount();
+  }
+
+  void getDoctorCount() async {
+    // Get a reference to the "doctor" collection
+    CollectionReference patientRef =
+        FirebaseFirestore.instance.collection('user');
+
+    // Get the number of documents in the "doctor" collection
+    int numDocuments = await patientRef.get().then((querySnapshot) {
+      return querySnapshot.size;
+    });
+
+    setState(() {
+      docnum = numDocuments;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            backgroundColor: Color.fromRGBO(21, 29, 54, 1),
-            shadowColor: Colors.transparent,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context); // Navigate back to previous screen
+      backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+        title: Text('Patient List'),
+      ),
+      body: docnum == 0
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: docnum,
+              itemBuilder: (BuildContext context, int index) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatScreen(),
+                      ),
+                    );
+                    // Handle gesture detector onTap event here
+                    print('Tapped on patient $index');
+                  },
+                  child: ListTile(
+                    tileColor: Colors.white,
+                    title: Text('patient ${index + 1}'),
+                  ),
+                );
               },
-            )),
-        body: Container(
-            color: Color.fromRGBO(21, 29, 54, 1),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Text(
-                    'You Are Succesfully Regitered As A Well Wisher',
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 50),
-                  Image(
-                    image: AssetImage(
-                        'lib/assets/images/wel.png'), // Specify the image file location here
-                    height: 250,
-                    //fit: BoxFit.cover,
-                  ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      det_gather = true;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => VerifyPage(),
-                        ),
-                      );
-                    },
-                    child: Text('Go to Home Page'),
-                  ),
-                ],
-              ),
-            )));
+            ),
+    );
   }
 }
 
@@ -2384,6 +2416,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromRGBO(21, 29, 54, 1),
         title: Text("Chat"),
       ),
       body: Column(
@@ -2446,8 +2479,6 @@ class m_inst extends StatefulWidget {
 }
 
 class m_instState extends State<m_inst> {
-  List<bool> _isCheckedList = [false, false, false, false, false];
-
   bool newValue = false;
   @override
   Widget build(BuildContext context) {
@@ -2462,68 +2493,118 @@ class m_instState extends State<m_inst> {
         children: [
           SizedBox(height: 10),
           Text(
-            'First type:',
+            'Tests',
             style: TextStyle(
                 fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           CheckboxListTile(
             checkColor: Colors.white,
             tileColor: Colors.white,
-            title: Text('Checkbox 1'),
-            value: _isCheckedList[0],
+            title: Text('Cell-free fetal DNA test(9 weeks)'),
+            value: m_inst_isCheckedList[0],
             onChanged: (newValue) {
               setState(() {
-                _isCheckedList[0] = true;
+                if (m_inst_isCheckedList[0] == false) {
+                  m_inst_isCheckedList[0] = true;
+                } else {
+                  m_inst_isCheckedList[0] = false;
+                }
               });
             },
           ),
           CheckboxListTile(
             checkColor: Colors.white,
             tileColor: Colors.white,
-            title: Text('Checkbox 2'),
-            value: _isCheckedList[1],
+            title: Text('Chrionic villus sampling(10-13 weeks)'),
+            value: m_inst_isCheckedList[1],
             onChanged: (newValue) {
               setState(() {
-                _isCheckedList[1] = true;
+                if (m_inst_isCheckedList[1] == false) {
+                  m_inst_isCheckedList[1] = true;
+                } else {
+                  m_inst_isCheckedList[1] = false;
+                }
               });
             },
           ),
           CheckboxListTile(
             checkColor: Colors.white,
             tileColor: Colors.white,
-            title: Text('Checkbox 3'),
-            value: _isCheckedList[2],
+            title: Text('Early ultrasound test(18-20 weeks)'),
+            value: m_inst_isCheckedList[2],
             onChanged: (newValue) {
               setState(() {
-                _isCheckedList[2] = true;
+                if (m_inst_isCheckedList[2] == false) {
+                  m_inst_isCheckedList[2] = true;
+                } else {
+                  m_inst_isCheckedList[2] = false;
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            checkColor: Colors.white,
+            tileColor: Colors.white,
+            title: Text('First trimester Screening(11-13 weeks)'),
+            value: m_inst_isCheckedList[3],
+            onChanged: (newValue) {
+              setState(() {
+                if (m_inst_isCheckedList[3] == false) {
+                  m_inst_isCheckedList[3] = true;
+                } else {
+                  m_inst_isCheckedList[3] = false;
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            checkColor: Colors.white,
+            tileColor: Colors.white,
+            title: Text('Glucose screening(24-28 weeks)'),
+            value: m_inst_isCheckedList[4],
+            onChanged: (newValue) {
+              setState(() {
+                if (m_inst_isCheckedList[4] == false) {
+                  m_inst_isCheckedList[4] = true;
+                } else {
+                  m_inst_isCheckedList[4] = false;
+                }
               });
             },
           ),
           SizedBox(height: 10),
           Text(
-            'Second type:',
+            'Vaccines:',
             style: TextStyle(
                 fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           CheckboxListTile(
             checkColor: Colors.white,
             tileColor: Colors.white,
-            title: Text('Checkbox 4'),
-            value: _isCheckedList[3],
+            title: Text('Tdap Vaccine'),
+            value: m_inst_isCheckedList[5],
             onChanged: (newValue) {
               setState(() {
-                _isCheckedList[3] = true;
+                if (m_inst_isCheckedList[5] == false) {
+                  m_inst_isCheckedList[5] = true;
+                } else {
+                  m_inst_isCheckedList[5] = false;
+                }
               });
             },
           ),
           CheckboxListTile(
             checkColor: Colors.white,
             tileColor: Colors.white,
-            title: Text('Checkbox 5'),
-            value: _isCheckedList[4],
+            title: Text('Flu Vaccine'),
+            value: m_inst_isCheckedList[6],
             onChanged: (newValue) {
               setState(() {
-                _isCheckedList[4] = true;
+                if (m_inst_isCheckedList[6] == false) {
+                  m_inst_isCheckedList[6] = true;
+                } else {
+                  m_inst_isCheckedList[6] = false;
+                }
               });
             },
           ),
@@ -2556,8 +2637,6 @@ class c_inst extends StatefulWidget {
 }
 
 class c_instState extends State<c_inst> {
-  List<bool> _isCheckedList = [false, false, false, false, false];
-
   bool newValue = false;
   @override
   Widget build(BuildContext context) {
@@ -2565,74 +2644,77 @@ class c_instState extends State<c_inst> {
       backgroundColor: Color.fromRGBO(21, 29, 54, 1),
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(21, 29, 54, 1),
-        title: Text('My Page'),
+        title: Text('Instructions'),
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 10),
-          Text(
-            'First type:',
-            style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          CheckboxListTile(
-            tileColor: Colors.white,
-            title: Text('Checkbox 1'),
-            value: _isCheckedList[0],
-            onChanged: (newValue) {
-              setState(() {
-                _isCheckedList[0] = true;
-              });
-            },
-          ),
-          CheckboxListTile(
-            tileColor: Colors.white,
-            title: Text('Checkbox 2'),
-            value: _isCheckedList[1],
-            onChanged: (newValue) {
-              setState(() {
-                _isCheckedList[1] = true;
-              });
-            },
-          ),
-          CheckboxListTile(
-            tileColor: Colors.white,
-            title: Text('Checkbox 3'),
-            value: _isCheckedList[2],
-            onChanged: (newValue) {
-              setState(() {
-                _isCheckedList[2] = true;
-              });
-            },
-          ),
-          SizedBox(height: 10),
-          Text(
-            'Second type:',
-            style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          CheckboxListTile(
-            tileColor: Colors.white,
-            title: Text('Checkbox 4'),
-            value: _isCheckedList[3],
-            onChanged: (newValue) {
-              setState(() {
-                _isCheckedList[3] = true;
-              });
-            },
-          ),
-          CheckboxListTile(
-            tileColor: Colors.white,
-            title: Text('Checkbox 5'),
-            value: _isCheckedList[4],
-            onChanged: (newValue) {
-              setState(() {
-                _isCheckedList[4] = true;
-              });
-            },
-          ),
-        ],
-      ),
+      body: Column(children: [
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'Chek Your babys weight and height',
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'Give first Immunizations',
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'Give Sponge bath untill the umbilical cord falls off',
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'use fragnance-free soaps and lotions',
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'Call Your babys Doctor(!!you can use our apps consult with doctor option!!)',
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'Dont let anyone smoke or vape near your baby',
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'Avoid sun exposure',
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'Never Shake your baby',
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+      ]),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -2660,8 +2742,6 @@ class c_vac extends StatefulWidget {
 }
 
 class c_vacState extends State<c_vac> {
-  List<bool> _isCheckedList = [false, false, false, false, false];
-
   bool newValue = false;
   @override
   Widget build(BuildContext context) {
@@ -2669,43 +2749,139 @@ class c_vacState extends State<c_vac> {
       backgroundColor: Color.fromRGBO(21, 29, 54, 1),
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(21, 29, 54, 1),
-        title: Text('My Page'),
+        title: Text('Vaccines'),
       ),
       body: Column(
         children: [
           SizedBox(height: 10),
           Text(
-            'First type:',
+            'Vaccines',
             style: TextStyle(
                 fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           CheckboxListTile(
             tileColor: Colors.white,
-            title: Text('Checkbox 1'),
-            value: _isCheckedList[0],
+            title: Text('Hepatitis B(within 24 hours)'),
+            value: c_vac_isCheckedList[0],
             onChanged: (newValue) {
               setState(() {
-                _isCheckedList[0] = true;
+                if (c_vac_isCheckedList[0] == false) {
+                  c_vac_isCheckedList[0] = true;
+                } else {
+                  c_vac_isCheckedList[0] = false;
+                }
               });
             },
           ),
           CheckboxListTile(
             tileColor: Colors.white,
-            title: Text('Checkbox 2'),
-            value: _isCheckedList[1],
+            title: Text('Diptheria'),
+            value: c_vac_isCheckedList[1],
             onChanged: (newValue) {
               setState(() {
-                _isCheckedList[1] = true;
+                if (c_vac_isCheckedList[1] == false) {
+                  c_vac_isCheckedList[1] = true;
+                } else {
+                  c_vac_isCheckedList[1] = false;
+                }
               });
             },
           ),
           CheckboxListTile(
             tileColor: Colors.white,
-            title: Text('Checkbox 3'),
-            value: _isCheckedList[2],
+            title: Text('Tetunus'),
+            value: c_vac_isCheckedList[2],
             onChanged: (newValue) {
               setState(() {
-                _isCheckedList[2] = true;
+                if (c_vac_isCheckedList[2] == false) {
+                  c_vac_isCheckedList[2] = true;
+                } else {
+                  c_vac_isCheckedList[2] = false;
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('Pertussis'),
+            value: c_vac_isCheckedList[3],
+            onChanged: (newValue) {
+              setState(() {
+                if (c_vac_isCheckedList[3] == false) {
+                  c_vac_isCheckedList[3] = true;
+                } else {
+                  c_vac_isCheckedList[3] = false;
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('Dtap'),
+            value: c_vac_isCheckedList[4],
+            onChanged: (newValue) {
+              setState(() {
+                if (c_vac_isCheckedList[4] == false) {
+                  c_vac_isCheckedList[4] = true;
+                } else {
+                  c_vac_isCheckedList[4] = false;
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('Haemophilus influenza type b '),
+            value: c_vac_isCheckedList[5],
+            onChanged: (newValue) {
+              setState(() {
+                if (c_vac_isCheckedList[5] == false) {
+                  c_vac_isCheckedList[5] = true;
+                } else {
+                  c_vac_isCheckedList[5] = false;
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('IPV(polio)'),
+            value: c_vac_isCheckedList[6],
+            onChanged: (newValue) {
+              setState(() {
+                if (c_vac_isCheckedList[6] == false) {
+                  c_vac_isCheckedList[6] = true;
+                } else {
+                  c_vac_isCheckedList[6] = false;
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('pneumococcal(PCV)'),
+            value: c_vac_isCheckedList[7],
+            onChanged: (newValue) {
+              setState(() {
+                if (c_vac_isCheckedList[7] == false) {
+                  c_vac_isCheckedList[7] = true;
+                } else {
+                  c_vac_isCheckedList[7] = false;
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            tileColor: Colors.white,
+            title: Text('Rotavirus(RV)'),
+            value: c_vac_isCheckedList[8],
+            onChanged: (newValue) {
+              setState(() {
+                if (c_vac_isCheckedList[8] == false) {
+                  c_vac_isCheckedList[8] = true;
+                } else {
+                  c_vac_isCheckedList[8] = false;
+                }
               });
             },
           ),
@@ -2801,10 +2977,7 @@ class phy extends StatefulWidget {
   phyState createState() => phyState();
 }
 
-class phyState extends State<phy> {
-  List<String> tabletNames = ['Tablet 1', 'Tablet 2', 'Tablet 3', 'Tablet 4'];
-  List<int> tabletsRemaining = [10, 20, 30, 40];
-  List<bool> remainders = [false, true, false, true];
+/*class phyState extends State<phy> {
   TextEditingController box1Controller = TextEditingController();
   TextEditingController box2Controller = TextEditingController();
   TextEditingController box3Controller = TextEditingController();
@@ -2957,5 +3130,151 @@ class phyState extends State<phy> {
             ),
           ),
         ));
+  }
+}*/
+
+class phyState extends State<phy> {
+  TextEditingController box1Controller = TextEditingController();
+  TextEditingController box2Controller = TextEditingController();
+  TextEditingController box3Controller = TextEditingController();
+  TextEditingController box4Controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(21, 29, 54, 1),
+        title: Text('Physical Health'),
+      ),
+      body: SingleChildScrollView(
+        // Wrapping Column with SingleChildScrollView
+        child: Container(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(children: [
+              SizedBox(height: 1.0),
+              Text('Age'),
+              TextFormField(
+                controller: box1Controller,
+                decoration: InputDecoration(
+                  labelText: '$usr_age',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton.icon(
+                onPressed: () {
+                  usr_age = box1Controller.text;
+                },
+                icon: Icon(Icons.update),
+                label: Text('Update'),
+              ),
+              Text('Pregnant Month'),
+              SizedBox(height: 1.0),
+              TextFormField(
+                controller: box2Controller,
+                decoration: InputDecoration(
+                  labelText: '$usr_pmonth',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton.icon(
+                onPressed: () {
+                  usr_pmonth = box2Controller.text;
+                },
+                icon: Icon(Icons.update),
+                label: Text('Update'),
+              ),
+              SizedBox(height: 1.0),
+              Text('Height'),
+              TextFormField(
+                controller: box3Controller,
+                decoration: InputDecoration(
+                  labelText: '$usr_height',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton.icon(
+                onPressed: () {
+                  usr_height = box3Controller.text;
+                },
+                icon: Icon(Icons.update),
+                label: Text('Update'),
+              ),
+              SizedBox(height: 1.0),
+              Text('Weight'),
+              TextFormField(
+                controller: box4Controller,
+                decoration: InputDecoration(
+                  labelText: '$usr_weight',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton.icon(
+                onPressed: () {
+                  usr_weight = box4Controller.text;
+                },
+                icon: Icon(Icons.update),
+                label: Text('Update'),
+              ),
+              SizedBox(height: 32.0),
+              Table(
+                border: TableBorder.all(),
+                columnWidths: {
+                  0: FlexColumnWidth(3),
+                  1: FlexColumnWidth(2),
+                  2: FlexColumnWidth(2),
+                },
+                children: [
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Text('Tablet Name'),
+                      ),
+                      TableCell(
+                        child: Text('Tablets Remaining'),
+                      ),
+                      TableCell(
+                        child: Text('Remainder'),
+                      ),
+                    ],
+                  ),
+                  for (int i = 0; i < tabletNames.length; i++)
+                    TableRow(
+                      children: [
+                        TableCell(
+                          child: Text(tabletNames[i]),
+                        ),
+                        TableCell(
+                          child: TextFormField(
+                            initialValue: tabletsRemaining[i].toString(),
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        TableCell(
+                          child: Checkbox(
+                            value: remainders[i],
+                            onChanged: (value) {
+                              setState(() {
+                                remainders[i] = value!;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ]),
+          ),
+        ),
+      ),
+    );
   }
 }
