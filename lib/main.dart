@@ -22,6 +22,7 @@ CollectionReference wellwisher =
     FirebaseFirestore.instance.collection("wellwisher");
 
 int type = 0;
+//for identifying the type of usewr
 
 class MyApp extends StatelessWidget {
   @override
