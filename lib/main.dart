@@ -15,7 +15,7 @@ void main() async {
 }
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
-
+//creating references to th firebase
 CollectionReference user = FirebaseFirestore.instance.collection("user");
 CollectionReference doctor = FirebaseFirestore.instance.collection("doctor");
 CollectionReference wellwisher =
